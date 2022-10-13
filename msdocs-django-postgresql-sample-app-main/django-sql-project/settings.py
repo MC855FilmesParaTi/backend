@@ -65,7 +65,6 @@ MIDDLEWARE = [
 ]
 
 
-
 ROOT_URLCONF = 'django-sql-project.urls'
 
 TEMPLATES = [
@@ -91,31 +90,42 @@ WSGI_APPLICATION = 'django-sql-project.wsgi.application'
 # https://github.com/microsoft/mssql-django
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
+
 DATABASES = {
     'default': {
         'ENGINE': 'mssql',
-        'NAME': os.getenv("DB_NAME"),
-        'HOST': os.getenv("DB_SERVER"),
         'PORT': '1433',
-        'USER': os.getenv("DB_USER"),
-        'PASSWORD': os.getenv("DB_PASSWORD"),
         'OPTIONS': {
-	            'driver': 'ODBC Driver 18 for SQL Server',
-	        },
+                'driver': 'ODBC Driver 17 for SQL Server',
+        },
     }
-
-    #To connect Azure SQL DB using MSI (Managed Service Identity)
-    # {
-    #     'ENGINE': 'mssql',
-    #     'HOST': 'xyz.database.windows.net',
-    #     'NAME': 'mydb', 
-    #     'PORT': '', 
-    #     'Trusted_Connection': 'no', 
-    #     'OPTIONS': { 
-    #         'driver': 'ODBC Driver 17 for SQL Server', 
-    #         'extra_params': "Authentication=ActiveDirectoryMsi;Encrypt=yes;TrustServerCertificate=no" }
-    # }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'mssql',
+#         'NAME': os.getenv("DB_NAME"),
+#         'HOST': os.getenv("DB_SERVER"),
+#         'PORT': '1433',
+#         'USER': os.getenv("DB_USER"),
+#         'PASSWORD': os.getenv("DB_PASSWORD"),
+#         'OPTIONS': {
+#             'driver': 'ODBC Driver 18 for SQL Server',
+#         },
+#     }
+
+# To connect Azure SQL DB using MSI (Managed Service Identity)
+# {
+#     'ENGINE': 'mssql',
+#     'HOST': 'xyz.database.windows.net',
+#     'NAME': 'mydb',
+#     'PORT': '',
+#     'Trusted_Connection': 'no',
+#     'OPTIONS': {
+#         'driver': 'ODBC Driver 17 for SQL Server',
+#         'extra_params': "Authentication=ActiveDirectoryMsi;Encrypt=yes;TrustServerCertificate=no" }
+# }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
