@@ -91,28 +91,29 @@ WSGI_APPLICATION = 'django-sql-project.wsgi.application'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'mssql',
-        'PORT': '1433',
-        'OPTIONS': {
-                'driver': 'ODBC Driver 17 for SQL Server',
-        },
-    }
-}
-
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'mssql',
-#         'NAME': os.getenv("DB_NAME"),
-#         'HOST': os.getenv("DB_SERVER"),
 #         'PORT': '1433',
-#         'USER': os.getenv("DB_USER"),
-#         'PASSWORD': os.getenv("DB_PASSWORD"),
 #         'OPTIONS': {
-#             'driver': 'ODBC Driver 18 for SQL Server',
+#                 'driver': 'ODBC Driver 17 for SQL Server',
 #         },
 #     }
+# }
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'mssql',
+        'NAME': os.getenv("DB_NAME"),
+        'HOST': os.getenv("DB_SERVER"),
+        'PORT': '1433',
+        'USER': os.getenv("DB_USER"),
+        'PASSWORD': os.getenv("DB_PASSWORD"),
+        'OPTIONS': {
+            'driver': 'ODBC Driver 18 for SQL Server',
+        },
+    }
+}
 
 # To connect Azure SQL DB using MSI (Managed Service Identity)
 # {
