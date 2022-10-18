@@ -48,7 +48,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
-    'customerapi'
+    'customerapi',
+    'django_auth_adfs',
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
@@ -146,6 +147,27 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+client_id = os.getenv("CLIENT_ID")
+client_secret = os.getenv("CLIENT_SECRET")
+tenant_id = os.getenv("TENANT_ID")
+
+AUTH_ADFS = {
+    'AUDIENCE': client_id,
+    'CLIENT_ID': client_id,
+    'CLIENT_SECRET': client_secret,
+    'CLAIM_MAPPING': {'first_name': 'given_name',
+                      'last_name': 'family_name',
+                      'email': 'upn'},
+    'GROUPS_CLAIM': 'roles',
+    'MIRROR_GROUPS': True,
+    'USERNAME_CLAIM': 'upn',
+    'TENANT_ID': tenant_id,
+    'RELYING_PARTY_ID': client_id,
+}
+
+AUTHENTICATION_BACKENDS = [
+    'django_auth_adfs.backend.AdfsAccessTokenBackend',
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
@@ -165,6 +187,8 @@ USE_TZ = False
 
 STATIC_URL = '/static/'
 STATIC_ROOT = 'static'
+LOGIN_URL = "django_auth_adfs:login"
+LOGIN_REDIRECT_URL = "/customerapi/customer"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field

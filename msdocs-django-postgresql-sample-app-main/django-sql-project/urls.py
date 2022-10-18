@@ -18,8 +18,10 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import include, path
 
-#URl patterns
+# URl patterns
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('customerapi/', include('customerapi.urls')),
+    path('oauth2/', include('django_auth_adfs.urls')),
+    path('', include('home.urls'))
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
