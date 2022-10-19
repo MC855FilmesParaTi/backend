@@ -165,6 +165,13 @@ AUTH_ADFS = {
     'RELYING_PARTY_ID': client_id,
 }
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'django_auth_adfs.rest_framework.AdfsAccessTokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    )
+}
+
 AUTHENTICATION_BACKENDS = [
     'django_auth_adfs.backend.AdfsAccessTokenBackend',
 ]
