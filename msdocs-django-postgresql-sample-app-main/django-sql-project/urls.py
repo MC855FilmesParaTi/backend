@@ -23,5 +23,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('customerapi/', include('customerapi.urls')),
     path('oauth2/', include('django_auth_adfs.urls')),
-    path('', include('home.urls'))
+    path('', include('home.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

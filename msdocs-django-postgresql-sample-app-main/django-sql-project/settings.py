@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'customerapi',
     'django_auth_adfs',
+    'home',
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
