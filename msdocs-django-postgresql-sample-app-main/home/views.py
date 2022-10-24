@@ -1,6 +1,7 @@
 import re
-from django.shortcuts import render
-from django.http import HttpResponse
+from django.forms import Form
+from django.shortcuts import redirect, render
+from django.contrib.auth.forms import UserCreationForm
 # Create your views here.
 
 
@@ -10,4 +11,13 @@ def home(request):
 
 
 def signup(request):
-    return render(request, "registration/signup.html")
+    if(request.method == "POST"):
+        form = UserCreationForm(request.POST)
+        if(form.is_valid()):
+            user = form.save()
+            return redirect("home")
+    else:
+        form = UserCreationForm()
+    return render(request, "registration/signup.html", {
+        'form': form
+    })
