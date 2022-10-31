@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
     'corsheaders',
     'customerapi',
     'django_auth_adfs',
@@ -167,10 +168,12 @@ AUTH_ADFS = {
 }
 
 REST_FRAMEWORK = {
+    "NON_FIELD_ERRORS_KEY": "errors",
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'django_auth_adfs.rest_framework.AdfsAccessTokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
-    )
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated")
 }
 
 AUTHENTICATION_BACKENDS = [
