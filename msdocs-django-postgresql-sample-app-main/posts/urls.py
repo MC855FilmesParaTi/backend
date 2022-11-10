@@ -16,6 +16,7 @@ urlpatterns = [
         views.ListPostsForAuthor.as_view(),
         name="posts_for_current_user",
     ),
+    path("test_permission/", views.only_authenticated_users_can_see_this_message, name="test_permission"),
 ]
 
 

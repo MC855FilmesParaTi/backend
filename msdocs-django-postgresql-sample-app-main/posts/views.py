@@ -29,11 +29,19 @@ def homepage(request: Request):
     if request.method == "POST":
         data = request.data
 
-        response = {"message": "Hello World", "data": data}
+        f = open("test.txt", "r")
+
+        msg = f.readline()
+
+        response = {"message": msg, "data": data}
 
         return Response(data=response, status=status.HTTP_201_CREATED)
+    
+    f = open('test.txt', "r")
 
-    response = {"message": "Hello World"}
+    msg = f.readline()
+
+    response = {"message": msg}
     return Response(data=response, status=status.HTTP_200_OK)
 
 
@@ -109,3 +117,17 @@ class ListPostsForAuthor(generics.GenericAPIView, mixins.ListModelMixin):
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
+
+
+@api_view(http_method_names=["GET"])
+@permission_classes([IsAuthenticated])
+def only_authenticated_users_can_see_this_message(request: Request):
+
+    f = open('test.txt', "r")
+
+    msg = f.readline()
+
+    response = {"message": msg}
+    return Response(data=response, status=status.HTTP_200_OK)
+
+
