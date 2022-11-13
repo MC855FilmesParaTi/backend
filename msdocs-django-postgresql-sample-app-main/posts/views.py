@@ -341,3 +341,34 @@ def setscoremovie(request: Request):
 
     return Response(data=response, status=status.HTTP_200_OK)
     
+@api_view(http_method_names=["GET"])
+@permission_classes([IsAuthenticated])
+def movie_details(request: Request):
+
+    username = request.query_params.get("username")
+
+    user = User.objects.get(username=username)
+
+    liked = user.liked_movies
+    disliked = user.disliked_movies
+
+    movieId = request.query_params.get("movieId")
+
+    f = open("successData.json")
+    movies = json.load(f)
+
+    move_found = {"message": "Não encontrado"}
+
+    for movie in movies:
+        if movie["id"] == movieId:
+            move_found = movie
+            if move_found["id"] in liked:
+                move_found["score"] = "like"
+            elif move_found["id"] in disliked:
+                move_found["score"] = "dislike"
+            else:
+                move_found["score"] = "unscore"
+        
+            return Response(data=move_found, status=status.HTTP_200_OK)
+
+    return Response(data=move_found, status=status.HTTP_200_OK)
