@@ -141,7 +141,6 @@ def only_authenticated_users_can_see_this_message(request: Request):
 @api_view(http_method_names=["GET", "POST"])
 @permission_classes([IsAuthenticated])
 def recommendations(request: Request):
-    username = request.query_params.get("username")
 
     f = open("successData.json")
 
@@ -188,7 +187,7 @@ def recommendations(request: Request):
 
     best_20 = []
 
-    user = User.objects.get(username=username)
+    user = request.user
 
     value = user.liked_movies
 
@@ -217,13 +216,12 @@ def recommendations(request: Request):
 @permission_classes([IsAuthenticated])
 def setscoremovie(request: Request):
 
-    username = request.data.get("username")
 
     movieId = request.data.get("movieId")
 
     score = request.data.get("score")
-
-    user = User.objects.get(username=username)
+ 
+    user = request.user
 
     liked = user.liked_movies
     disliked = user.disliked_movies
@@ -345,9 +343,8 @@ def setscoremovie(request: Request):
 @permission_classes([IsAuthenticated])
 def movie_details(request: Request):
 
-    username = request.query_params.get("username")
 
-    user = User.objects.get(username=username)
+    user = request.user
 
     liked = user.liked_movies
     disliked = user.disliked_movies
