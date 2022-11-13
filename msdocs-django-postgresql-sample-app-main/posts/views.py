@@ -213,70 +213,131 @@ def recommendations(request: Request):
     return Response(data=response, status=status.HTTP_200_OK)
 
 
-@api_view(http_method_names=["GET", "POST", "DELETE"])
+@api_view(http_method_names=["PUT"])
 @permission_classes([IsAuthenticated])
-def setlikemovie(request: Request):
+def setscoremovie(request: Request):
 
-    if request.method == "POST":
+    username = request.data.get("username")
 
-        username = request.data.get("username")
+    movieId = request.data.get("movieId")
 
-        movieId = request.data.get("movieId")
+    score = request.data.get("score")
 
-        user = User.objects.get(username=username)
+    user = User.objects.get(username=username)
 
-        value = user.liked_movies
+    liked = user.liked_movies
+    disliked = user.disliked_movies
 
-        if value == '':
-            string_back = movieId
+    if score == "like":
+
+        # Adiciona no like
+        if liked == '':
+            string_back_likes = movieId
         else:
-            value = value.split(",")
+            liked = liked.split(",")
 
-            if movieId not in value:
-                value.append(movieId)
+            if movieId not in liked:
+                liked.append(movieId)
 
-            string_back = "" + value[0]
+            if len(liked) > 0:
+                string_back_likes = "" + liked[0]
+            else:
+                string_back_likes = ""
 
+            for i in range(1, len(liked)):
 
-            for i in range(1, len(value)):
-
-                string_back = string_back + "," + value[i]
-
+                string_back_likes = string_back_likes + "," + liked[i]
         
-        user.liked_movies = string_back
+        # Remove no dislike
+        disliked = disliked.split(",")
 
-        user.save()
-        response = { "status": "Succesful"}
+        if movieId in disliked:
+            disliked.remove(movieId)
 
-        return Response(data=response, status=status.HTTP_200_OK)
+        if len(disliked) > 0 :
+            string_back_dislikes = "" + disliked[0]
+        else:
+            string_back_dislikes = ""
+
+        for i in range(1, len(disliked)):
+
+            string_back_dislikes = string_back_dislikes + "," + disliked[i]
     
-    elif request.method == "DELETE":
+    elif score == "dislike":
 
-        username = request.data.get("username")
+        # Adiciona no dislike
+        if disliked == '':
+            string_back_dislikes = movieId
+        else:
+            disliked = disliked.split(",")
 
-        movieId = request.data.get("movieId")
+            if movieId not in disliked:
+                disliked.append(movieId)
 
-        user = User.objects.get(username=username)
+            if len(disliked) > 0 :
+                string_back_dislikes = "" + disliked[0]
+            else:
+                string_back_dislikes = ""
 
-        value = user.liked_movies
+            for i in range(1, len(disliked)):
 
-  
-        value = value.split(",")
+                string_back_dislikes = string_back_dislikes + "," + disliked[i]
+        
+        # Remove do like
+        liked = liked.split(",")
 
-        if movieId in value:
-            value.remove(movieId)
+        if movieId in liked:
+            liked.remove(movieId)
 
-        string_back = "" + value[0]
+        if len(liked) > 0:
+            string_back_likes = "" + liked[0]
+        else:
+            string_back_likes = ""
 
+        for i in range(1, len(liked)):
 
-        for i in range(1, len(value)):
+            string_back_likes = string_back_likes + "," + liked[i]
 
-            string_back = string_back + "," + value[i]
+    else:
+        
+
+        # Remove no dislike
+        disliked = disliked.split(",")
+
+        if movieId in disliked:
+            disliked.remove(movieId)
+        
+        if len(disliked) > 0 :
+            string_back_dislikes = "" + disliked[0]
+        else:
+            string_back_dislikes = ""
+
+        for i in range(1, len(disliked)):
+
+            string_back_dislikes = string_back_dislikes + "," + disliked[i]
+        
+        # Remove do like
+        liked = liked.split(",")
+
+        if movieId in liked:
+            liked.remove(movieId)
+
+        if len(liked) > 0:
+            string_back_likes = "" + liked[0]
+        else:
+            string_back_likes = ""
+
+        for i in range(1, len(liked)):
+
+            string_back_likes = string_back_likes + "," + liked[i]
 
         
-        user.liked_movies = string_back
+    
+    user.liked_movies = string_back_likes
+    user.disliked_movies = string_back_dislikes
 
-        user.save()
-        response = { "status": "Succesful"}
+    user.save()
+    response = { "status": "Succesful"}
 
-        return Response(data=response, status=status.HTTP_200_OK)
+    return Response(data=response, status=status.HTTP_200_OK)
+    

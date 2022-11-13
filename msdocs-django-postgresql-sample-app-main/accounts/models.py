@@ -35,6 +35,7 @@ class User(AbstractUser):
     username = models.CharField(max_length=45)
     date_of_birth = models.DateField(null=True)
     liked_movies = models.TextField()
+    disliked_movies = models.TextField()
 
     objects = CustomUserManager()
     USERNAME_FIELD = "email"
