@@ -17,6 +17,8 @@ urlpatterns = [
         name="posts_for_current_user",
     ),
     path("test_permission/", views.only_authenticated_users_can_see_this_message, name="test_permission"),
+    path("recommendations/", views.recommendations, name="recommendations"),
+    path("set_like_movie/", views.setlikemovie, name="set_like_movie")
 ]
 
 

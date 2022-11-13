@@ -10,10 +10,11 @@ from rest_framework.permissions import (
 )
 from rest_framework.request import Request
 from rest_framework.response import Response
-from .models import Post
+from .models import Post, User
 from .serializers import PostSerializer
 from .permissions import ReadOnly, AuthorOrReadOnly
 from rest_framework.pagination import PageNumberPagination
+import json
 
 
 class CustomPaginator(PageNumberPagination):
@@ -119,7 +120,7 @@ class ListPostsForAuthor(generics.GenericAPIView, mixins.ListModelMixin):
         return self.list(request, *args, **kwargs)
 
 
-@api_view(http_method_names=["GET"])
+@api_view(http_method_names=["GET", "POST"])
 @permission_classes([IsAuthenticated])
 def only_authenticated_users_can_see_this_message(request: Request):
 
@@ -127,7 +128,155 @@ def only_authenticated_users_can_see_this_message(request: Request):
 
     msg = f.readline()
 
-    response = {"message": msg}
+    data = request.data
+
+    param_id = request.query_params.get("movieId")
+
+    print(param_id)
+
+    response = {"message": msg, "data": data, "param_id": param_id}
     return Response(data=response, status=status.HTTP_200_OK)
 
 
+@api_view(http_method_names=["GET", "POST"])
+@permission_classes([IsAuthenticated])
+def recommendations(request: Request):
+    username = request.query_params.get("username")
+
+    f = open("successData.json")
+
+    movies = json.load(f)
+
+    bests = []
+
+    best_20 = []
+    
+    for movie in movies:
+        if float(movie["imdbScore"]) > 8.0:
+            
+            best_20.append(movie)
+        
+        if len(best_20) > 20:
+            break
+    
+    movie_dict = dict()
+    movie_dict["recName"] = "Top Score 20"
+    movie_dict["recList"] = best_20
+
+    bests.append(movie_dict)
+
+
+    best_20 = []
+    
+    for movie in movies:
+        if "popularity" in movie:
+            if ',' in movie["popularity"]:
+                movie["popularity"] = movie["popularity"].replace(',',"")
+
+            if int(movie["popularity"]) > 600:
+                
+                best_20.append(movie)
+            
+            if len(best_20) > 20:
+                break
+    
+    movie_dict = dict()
+    movie_dict["recName"] = "Top Popularity 20"
+    movie_dict["recList"] = best_20
+
+    bests.append(movie_dict)
+
+    best_20 = []
+
+    user = User.objects.get(username=username)
+
+    value = user.liked_movies
+
+    value = value.split(",")
+
+    for movie in movies:
+        if movie["id"] in value:
+            
+            best_20.append(movie)
+        
+        if len(best_20) > 20:
+            break
+    
+    movie_dict = dict()
+    movie_dict["recName"] = "Liked Movies"
+    movie_dict["recList"] = best_20
+
+    bests.append(movie_dict)
+
+    response = bests
+
+    return Response(data=response, status=status.HTTP_200_OK)
+
+
+@api_view(http_method_names=["GET", "POST", "DELETE"])
+@permission_classes([IsAuthenticated])
+def setlikemovie(request: Request):
+
+    if request.method == "POST":
+
+        username = request.data.get("username")
+
+        movieId = request.data.get("movieId")
+
+        user = User.objects.get(username=username)
+
+        value = user.liked_movies
+
+        if value == '':
+            string_back = movieId
+        else:
+            value = value.split(",")
+
+            if movieId not in value:
+                value.append(movieId)
+
+            string_back = "" + value[0]
+
+
+            for i in range(1, len(value)):
+
+                string_back = string_back + "," + value[i]
+
+        
+        user.liked_movies = string_back
+
+        user.save()
+        response = { "status": "Succesful"}
+
+        return Response(data=response, status=status.HTTP_200_OK)
+    
+    elif request.method == "DELETE":
+
+        username = request.data.get("username")
+
+        movieId = request.data.get("movieId")
+
+        user = User.objects.get(username=username)
+
+        value = user.liked_movies
+
+  
+        value = value.split(",")
+
+        if movieId in value:
+            value.remove(movieId)
+
+        string_back = "" + value[0]
+
+
+        for i in range(1, len(value)):
+
+            string_back = string_back + "," + value[i]
+
+        
+        user.liked_movies = string_back
+
+        user.save()
+        response = { "status": "Succesful"}
+
+        return Response(data=response, status=status.HTTP_200_OK)
