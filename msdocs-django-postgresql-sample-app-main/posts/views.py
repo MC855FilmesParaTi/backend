@@ -368,4 +368,4 @@ def movie_details(request: Request):
         
             return Response(data=move_found, status=status.HTTP_200_OK)
 
-    return Response(data=move_found, status=status.HTTP_200_OK)
+    return Response(data=move_found, status=status.HTTP_404_NOT_FOUND)
