@@ -19,7 +19,8 @@ urlpatterns = [
     path("test_permission/", views.only_authenticated_users_can_see_this_message, name="test_permission"),
     path("recommendations/", views.recommendations, name="recommendations"),
     path("set_score_movie/", views.setscoremovie, name="set_score_movie"),
-    path("movie_details/", views.movie_details, name ="movie_details")
+    path("movie_details/", views.movie_details, name ="movie_details"),
+    path("search/", views.search_movies, name="serach_movies")
 ]
 
 

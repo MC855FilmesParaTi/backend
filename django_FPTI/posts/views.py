@@ -157,8 +157,6 @@ def BoboSort(lista, criterio,qtd):
     return saida
 
 
-
-
 def Ordena(arquivo, crit, saida,qtd):
     file = open(arquivo);
     movies = json.load(file);
@@ -385,3 +383,20 @@ def movie_details(request: Request):
             return Response(data=move_found, status=status.HTTP_200_OK)
 
     return Response(data=move_found, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(http_method_names=["POST"])
+@permission_classes([IsAuthenticated])
+def search_movies(request: Request):
+
+    key = request.data.get("keySearch")
+
+    f = open("successData.json")
+    movies = json.load(f)
+
+    movies_found = []
+
+    for movie in movies:
+        if key.lower() in movie["title"].lower():
+            movies_found.append(movie)
+
+    return Response(data=movies_found, status=status.HTTP_200_OK)
