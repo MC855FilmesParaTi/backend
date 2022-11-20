@@ -138,26 +138,51 @@ def only_authenticated_users_can_see_this_message(request: Request):
     return Response(data=response, status=status.HTTP_200_OK)
 
 
+def BoboSort(lista, criterio,qtd):
+    saida = []
+    k=0;
+    while((len(saida)<qtd) and k<len(lista)):
+        max = -100.0;
+        for i,item in enumerate(lista):
+            if criterio in item:
+                if ',' in item[criterio]:
+                    item[criterio] = item[criterio].replace(',',"")
+                if(float(item[criterio]) > max):
+                    max = float(item[criterio])
+                    selecionado = item;
+                    apagar = i;
+        lista.pop(apagar)
+        saida.append(selecionado);
+        k=k+1;
+    return saida
+
+
+
+
+def Ordena(arquivo, crit, saida,qtd):
+    file = open(arquivo);
+    movies = json.load(file);
+    with open(saida, 'w', encoding='utf-8') as f:
+        json.dump(BoboSort(movies, crit, qtd), f, ensure_ascii=False, indent=4)
+
+
 @api_view(http_method_names=["GET", "POST"])
 @permission_classes([IsAuthenticated])
 def recommendations(request: Request):
 
+
     f = open("successData.json")
+    Ordena("successData.json", "imdbScore", 'Top20Score.json',20);
+    Ordena("successData.json", "popularity", 'Top20pop.json',20);
+    g = open("Top20Score.json")
+    h = open("Top20pop.json")
 
     movies = json.load(f)
 
     bests = []
 
-    best_20 = []
-    
-    for movie in movies:
-        if float(movie["imdbScore"]) > 8.0:
-            
-            best_20.append(movie)
-        
-        if len(best_20) > 20:
-            break
-    
+    best_20 = json.load(g)
+
     movie_dict = dict()
     movie_dict["recName"] = "Top Score 20"
     movie_dict["recList"] = best_20
@@ -165,19 +190,8 @@ def recommendations(request: Request):
     bests.append(movie_dict)
 
 
-    best_20 = []
+    best_20 =  json.load(h)
     
-    for movie in movies:
-        if "popularity" in movie:
-            if ',' in movie["popularity"]:
-                movie["popularity"] = movie["popularity"].replace(',',"")
-
-            if int(movie["popularity"]) > 600:
-                
-                best_20.append(movie)
-            
-            if len(best_20) > 20:
-                break
     
     movie_dict = dict()
     movie_dict["recName"] = "Top Popularity 20"
