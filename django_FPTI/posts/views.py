@@ -164,6 +164,7 @@ def Ordena(arquivo, crit, saida,qtd):
     movies = json.load(file);
     with open(saida, 'w', encoding='utf-8') as f:
         json.dump(BoboSort(movies, crit, qtd), f, ensure_ascii=False, indent=4)
+    file.close()
 
 
 @api_view(http_method_names=["GET", "POST"])
@@ -174,15 +175,16 @@ def recommendations(request: Request):
     f = open("successData.json")
     Ordena("successData.json", "imdbScore", 'Top20Score.json',20);
     Ordena("successData.json", "popularity", 'Top20pop.json',20);
+   
     g = open("Top20Score.json")
     h = open("Top20pop.json")
 
     movies = json.load(f)
-
+    f.close()
     bests = []
 
     best_20 = json.load(g)
-
+    g.close()
     movie_dict = dict()
     movie_dict["recName"] = "Top Score 20"
     movie_dict["recList"] = best_20
@@ -191,7 +193,7 @@ def recommendations(request: Request):
 
 
     best_20 =  json.load(h)
-    
+    h.close()
     
     movie_dict = dict()
     movie_dict["recName"] = "Top Popularity 20"
