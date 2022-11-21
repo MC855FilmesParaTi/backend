@@ -40,6 +40,12 @@ def normatizar(arquivo):
             movie["popularity"] = "0"
         if "popularityDelta" not in movie:
             movie["popularityDelta"] = "0"
+        if 'UX190_' in movie["poster"]:
+                    movie["poster"] = movie["poster"].replace('UX190_',"UX1900_")
+        if 'UY281_' in movie["poster"]:
+                    movie["poster"] = movie["poster"].replace('UY281_',"UY2810_")
+        if ',190,281_.jpg' in movie["poster"]:
+                    movie["poster"] = movie["poster"].replace(',190,281_.jpg',",1900,2810_.jpg")
 
 
     file = open(arquivo, "w")
