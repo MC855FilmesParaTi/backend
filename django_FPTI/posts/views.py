@@ -16,6 +16,12 @@ from .permissions import ReadOnly, AuthorOrReadOnly
 from rest_framework.pagination import PageNumberPagination
 import json
 
+import os
+
+import tensorflow as tf
+from tensorflow import keras
+import datetime;
+
 
 class CustomPaginator(PageNumberPagination):
     page_size = 3
@@ -230,6 +236,7 @@ def recommendations(request: Request):
 @permission_classes([IsAuthenticated])
 def setscoremovie(request: Request):
 
+    ct = str(datetime.datetime.now())
 
     movieId = request.data.get("movieId")
 
@@ -240,113 +247,181 @@ def setscoremovie(request: Request):
     liked = user.liked_movies
     disliked = user.disliked_movies
 
+    timestamp_liked = user.timestamp_liked_movies
+    timestamp_disliked = user.timestamp_disliked_movies
+
     if score == "like":
 
         # Adiciona no like
         if liked == '':
             string_back_likes = movieId
+            string_back_likes_times = ct
         else:
             liked = liked.split(",")
+            timestamp_liked = timestamp_liked.split(",")
 
             if movieId not in liked:
                 liked.append(movieId)
+                timestamp_liked.append(ct)
 
             if len(liked) > 0:
                 string_back_likes = "" + liked[0]
+                string_back_likes_times = "" + timestamp_liked[0]
             else:
                 string_back_likes = ""
+                string_back_likes_times = ""
 
             for i in range(1, len(liked)):
 
                 string_back_likes = string_back_likes + "," + liked[i]
+                string_back_likes_times = string_back_likes_times + "," + timestamp_liked[i]
         
         # Remove no dislike
         disliked = disliked.split(",")
+        timestamp_disliked = timestamp_disliked.split(",")
 
         if movieId in disliked:
-            disliked.remove(movieId)
+            new_disliked = []
+            new_times_disliked = []
+
+            for i in range(len(disliked)):
+                if disliked[i] != movieId:
+                    new_disliked.append(disliked[i])
+                    new_times_disliked.append(timestamp_disliked[i])
+        
+            disliked = new_disliked
+            timestamp_disliked = new_times_disliked
 
         if len(disliked) > 0 :
             string_back_dislikes = "" + disliked[0]
+            string_back_dislikes_times = "" + timestamp_disliked[0]
         else:
             string_back_dislikes = ""
+            string_back_dislikes_times = ""
 
         for i in range(1, len(disliked)):
 
             string_back_dislikes = string_back_dislikes + "," + disliked[i]
+            string_back_dislikes_times = string_back_dislikes_times + "," + timestamp_disliked[i]
     
     elif score == "dislike":
 
         # Adiciona no dislike
         if disliked == '':
             string_back_dislikes = movieId
+            string_back_dislikes_times = ct
         else:
             disliked = disliked.split(",")
+            timestamp_disliked = timestamp_disliked.split(",")
 
             if movieId not in disliked:
                 disliked.append(movieId)
+                timestamp_disliked.append(ct)
 
             if len(disliked) > 0 :
                 string_back_dislikes = "" + disliked[0]
+                string_back_dislikes_times = "" + timestamp_disliked[0]
             else:
                 string_back_dislikes = ""
 
             for i in range(1, len(disliked)):
 
                 string_back_dislikes = string_back_dislikes + "," + disliked[i]
+                string_back_dislikes_times = string_back_dislikes_times + "," + timestamp_disliked[i]
         
         # Remove do like
         liked = liked.split(",")
+        timestamp_liked = timestamp_liked.split(",")
 
         if movieId in liked:
-            liked.remove(movieId)
+            new_liked = []
+            new_times_liked = []
+
+            for i in range(len(liked)):
+                if liked[i] != movieId:
+                    new_liked.append(liked[i])
+                    new_times_liked.append(timestamp_liked[i])
+        
+            liked = new_liked
+            timestamp_liked = new_times_liked
 
         if len(liked) > 0:
             string_back_likes = "" + liked[0]
+            string_back_likes_times = "" + timestamp_liked[0]
         else:
             string_back_likes = ""
+            string_back_likes_times = ""
 
         for i in range(1, len(liked)):
 
             string_back_likes = string_back_likes + "," + liked[i]
+            string_back_likes_times = string_back_likes_times + "," + timestamp_liked[i]
 
     else:
         
 
         # Remove no dislike
         disliked = disliked.split(",")
+        timestamp_disliked = timestamp_disliked.split(",")
 
         if movieId in disliked:
-            disliked.remove(movieId)
+            new_disliked = []
+            new_times_disliked = []
+
+            for i in range(len(disliked)):
+                if disliked[i] != movieId:
+                    new_disliked.append(disliked[i])
+                    new_times_disliked.append(timestamp_disliked[i])
         
+            disliked = new_disliked
+            timestamp_disliked = new_times_disliked
+
         if len(disliked) > 0 :
             string_back_dislikes = "" + disliked[0]
+            string_back_dislikes_times = "" + timestamp_disliked[0]
         else:
             string_back_dislikes = ""
+            string_back_dislikes_times = ""
 
         for i in range(1, len(disliked)):
 
             string_back_dislikes = string_back_dislikes + "," + disliked[i]
+            string_back_dislikes_times = string_back_dislikes_times + "," + timestamp_disliked[i]
         
         # Remove do like
         liked = liked.split(",")
+        timestamp_liked = timestamp_liked.split(",")
 
         if movieId in liked:
-            liked.remove(movieId)
+            new_liked = []
+            new_times_liked = []
+
+            for i in range(len(liked)):
+                if liked[i] != movieId:
+                    new_liked.append(liked[i])
+                    new_times_liked.append(timestamp_liked[i])
+        
+            liked = new_liked
+            timestamp_liked = new_times_liked
 
         if len(liked) > 0:
             string_back_likes = "" + liked[0]
+            string_back_likes_times = "" + timestamp_disliked[0]
         else:
             string_back_likes = ""
+            string_back_likes_times = ""
 
         for i in range(1, len(liked)):
 
             string_back_likes = string_back_likes + "," + liked[i]
+            string_back_likes_times = string_back_likes_times + "," + timestamp_liked[i]
 
         
     
     user.liked_movies = string_back_likes
     user.disliked_movies = string_back_dislikes
+    user.timestamp_liked_movies = string_back_likes_times
+    user.timestamp_disliked_movies = string_back_dislikes_times
 
     user.save()
     response = { "status": "Succesful"}
@@ -400,3 +475,24 @@ def search_movies(request: Request):
             movies_found.append(movie)
 
     return Response(data=movies_found, status=status.HTTP_200_OK)
+
+@api_view(http_method_names=["GET"])
+@permission_classes([IsAuthenticated])
+def test_load_model(request: Request):
+
+    (train_images, train_labels), (test_images, test_labels) = tf.keras.datasets.mnist.load_data()
+
+    train_labels = train_labels[:1000]
+    test_labels = test_labels[:1000]
+
+    train_images = train_images[:1000].reshape(-1, 28 * 28) / 255.0
+    test_images = test_images[:1000].reshape(-1, 28 * 28) / 255.0
+
+    new_model = tf.keras.models.load_model('saved_model/my_model')
+
+    # Evaluate the restored model
+    loss, acc = new_model.evaluate(test_images, test_labels, verbose=2)
+
+    response = {"loss": loss, "acc": acc}
+
+    return Response(data=response, status=status.HTTP_200_OK)
