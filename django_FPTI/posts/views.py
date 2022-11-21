@@ -203,12 +203,12 @@ def recommendations(request: Request):
 
     user = request.user
 
-    value = user.liked_movies
+    liked = user.liked_movies
 
-    value = value.split(",")
+    liked = liked.split(",")
 
     for movie in movies:
-        if movie["id"] in value:
+        if movie["id"] in liked:
             
             best_20.append(movie)
         
@@ -220,6 +220,40 @@ def recommendations(request: Request):
     movie_dict["recList"] = best_20
 
     bests.append(movie_dict)
+
+    liked_all_users = User.objects.values_list("liked_movies")
+
+    recs = []
+
+    for movie_liked in liked:
+        for item in liked_all_users:
+            l_item = item[0].split(",")
+
+            if movie_liked in l_item:
+                for id_item in l_item:
+                    recs.append(id_item)
+        
+    recs_tratada = []
+
+    for movie_rec in recs:
+        if movie_rec not in recs_tratada and movie_rec not in liked:
+            recs_tratada.append(movie_rec)
+
+    
+    recs_movies_infos = []
+
+    for movie in movies:
+        if movie["id"] in recs_tratada:
+            recs_movies_infos.append(movie)
+
+
+    movie_dict = dict()
+    movie_dict["recName"] = "Recommendations"
+    movie_dict["recList"] = recs_movies_infos
+
+    bests.append(movie_dict)
+
+    print("recs", recs_tratada)
 
     response = bests
 
