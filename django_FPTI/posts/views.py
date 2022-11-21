@@ -477,7 +477,7 @@ def search_movies(request: Request):
     return Response(data=movies_found, status=status.HTTP_200_OK)
 
 @api_view(http_method_names=["GET"])
-@permission_classes([IsAuthenticated])
+@permission_classes([AllowAny])
 def test_load_model(request: Request):
 
     (train_images, train_labels), (test_images, test_labels) = tf.keras.datasets.mnist.load_data()
@@ -488,7 +488,7 @@ def test_load_model(request: Request):
     train_images = train_images[:1000].reshape(-1, 28 * 28) / 255.0
     test_images = test_images[:1000].reshape(-1, 28 * 28) / 255.0
 
-    new_model = tf.keras.models.load_model('saved_model/my_model')
+    new_model = tf.keras.models.load_model("my_model")
 
     # Evaluate the restored model
     loss, acc = new_model.evaluate(test_images, test_labels, verbose=2)
