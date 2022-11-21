@@ -253,8 +253,6 @@ def recommendations(request: Request):
 
     bests.append(movie_dict)
 
-    print("recs", recs_tratada)
-
     response = bests
 
     return Response(data=response, status=status.HTTP_200_OK)
