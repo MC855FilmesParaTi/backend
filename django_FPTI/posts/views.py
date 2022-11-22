@@ -16,6 +16,7 @@ from .permissions import ReadOnly, AuthorOrReadOnly
 from rest_framework.pagination import PageNumberPagination
 import json
 import csv
+import datetime
 
 
 class CustomPaginator(PageNumberPagination):
@@ -222,60 +223,69 @@ def recommendations(request: Request):
 
     bests.append(movie_dict)
 
-    if "mock" in user.email and "Mock" in user.username:
-        id = user.username[5:]
-        print(id)
+    if user.predicts != "":
+        # id = user.username[5:]
+        # recs_movies_infos = []
+        # aodenar = {}
+
+        # with open("all_predictions_100k.csv", 'r') as file:
+        #     reader = csv.reader(file)
+        #     for linha in reader:
+        #         if linha[0] == id:
+        #             if "e" not in linha[3]:
+        #                 aodenar[linha[1]] = linha[3]
+
+        # sorted_values = sorted(aodenar.values())
+        # sorted_dict = {}
+
+        # for i in sorted_values:
+        #     for k in aodenar.keys():
+        #         if aodenar[k] == i:
+        #             sorted_dict[k] = aodenar[k]
+        # saida = list(sorted_dict.keys())
+        # saida = saida[len(saida)-20:]
+        # saida.reverse()
+
+        # depara = {}
+        # with open("link.csv", "r") as link:
+        #     reader = csv.reader(link)
+        #     for linha in reader:
+        #         depara[linha[0]] = linha[1]
+        #         while len(depara[linha[0]])<7:
+        #             depara[linha[0]] = "0" + depara[linha[0]]
+        #         depara[linha[0]] = "tt" + depara[linha[0]]
+
+        # recs_tratada = []
+
+        # for a in saida:
+        #     if a in depara:
+        #         recs_tratada.append(depara[a])
+
         recs_movies_infos = []
-        aodenar = {}
 
-        with open("all_predictions_100k.csv", 'r') as file:
-            reader = csv.reader(file)
-            for linha in reader:
-                if linha[0] == id:
-                    if "e" not in linha[3]:
-                        aodenar[linha[1]] = linha[3]
+        predicts = user.predicts
+        predicts = predicts.split(",")
 
-        sorted_values = sorted(aodenar.values())
-        sorted_dict = {}
-
-        for i in sorted_values:
-            for k in aodenar.keys():
-                if aodenar[k] == i:
-                    sorted_dict[k] = aodenar[k]
-        saida = list(sorted_dict.keys())
-        saida = saida[len(saida)-20:]
-        saida.reverse()
-        print(saida)
-        depara = {}
-        with open("link.csv", "r") as link:
-            reader = csv.reader(link)
-            for linha in reader:
-                depara[linha[0]] = linha[1]
-                while len(depara[linha[0]])<7:
-                    depara[linha[0]] = "0" + depara[linha[0]]
-                depara[linha[0]] = "tt" + depara[linha[0]]
-        recs_tratada = []
-        for a in saida:
-            if a in depara:
-                recs_tratada.append(depara[a])
         for movie in movies:
-            if movie["id"] in recs_tratada:
-                recs_movies_infos.append(movie);
-        
-
+            if movie["id"] in predicts:
+                recs_movies_infos.append(movie)
 
     else:
         liked_all_users = User.objects.values_list("liked_movies")
 
         recs = []
 
+        
         for movie_liked in liked:
+            counter = 0
             for item in liked_all_users:
                 l_item = item[0].split(",")
 
                 if movie_liked in l_item:
-                    for id_item in l_item:
-                        recs.append(id_item)
+                    counter += 1
+                    if counter == 3:
+                        for id_item in l_item:
+                            recs.append(id_item)
             
         recs_tratada = []
 
@@ -306,6 +316,8 @@ def recommendations(request: Request):
 @permission_classes([IsAuthenticated])
 def setscoremovie(request: Request):
 
+    ct = str(datetime.datetime.now())
+
     movieId = request.data.get("movieId")
 
     score = request.data.get("score")
@@ -315,109 +327,188 @@ def setscoremovie(request: Request):
     liked = user.liked_movies
     disliked = user.disliked_movies
 
+    timestamp_liked = user.timestamp_liked_movies
+    timestamp_disliked = user.timestamp_disliked_movies
+
     if score == "like":
 
         # Adiciona no like
         if liked == '':
             string_back_likes = movieId
+            string_back_likes_times = ct
         else:
             liked = liked.split(",")
+            timestamp_liked = timestamp_liked.split(",")
 
             if movieId not in liked:
                 liked.append(movieId)
+                timestamp_liked.append(ct)
 
             if len(liked) > 0:
                 string_back_likes = "" + liked[0]
+                string_back_likes_times = "" + timestamp_liked[0]
             else:
                 string_back_likes = ""
+                string_back_likes_times = ""
 
             for i in range(1, len(liked)):
 
                 string_back_likes = string_back_likes + "," + liked[i]
+                string_back_likes_times = string_back_likes_times + "," + timestamp_liked[i]
         
         # Remove no dislike
         disliked = disliked.split(",")
+        timestamp_disliked = timestamp_disliked.split(",")
 
         if movieId in disliked:
-            disliked.remove(movieId)
+            new_disliked = []
+            new_times_disliked = []
+
+            for i in range(len(disliked)):
+                if disliked[i] != movieId:
+                    new_disliked.append(disliked[i])
+                    new_times_disliked.append(timestamp_disliked[i])
+        
+            disliked = new_disliked
+            timestamp_disliked = new_times_disliked
 
         if len(disliked) > 0 :
             string_back_dislikes = "" + disliked[0]
+            string_back_dislikes_times = "" + timestamp_disliked[0]
         else:
             string_back_dislikes = ""
+            string_back_dislikes_times = ""
 
         for i in range(1, len(disliked)):
 
             string_back_dislikes = string_back_dislikes + "," + disliked[i]
+            string_back_dislikes_times = string_back_dislikes_times + "," + timestamp_disliked[i]
     
     elif score == "dislike":
 
         # Adiciona no dislike
         if disliked == '':
             string_back_dislikes = movieId
+            string_back_dislikes_times = ct
         else:
             disliked = disliked.split(",")
+            timestamp_disliked = timestamp_disliked.split(",")
 
             if movieId not in disliked:
                 disliked.append(movieId)
+                timestamp_disliked.append(ct)
 
             if len(disliked) > 0 :
                 string_back_dislikes = "" + disliked[0]
+                string_back_dislikes_times = "" + timestamp_disliked[0]
             else:
                 string_back_dislikes = ""
 
             for i in range(1, len(disliked)):
 
                 string_back_dislikes = string_back_dislikes + "," + disliked[i]
+                string_back_dislikes_times = string_back_dislikes_times + "," + timestamp_disliked[i]
         
         # Remove do like
         liked = liked.split(",")
+        timestamp_liked = timestamp_liked.split(",")
 
         if movieId in liked:
-            liked.remove(movieId)
+            new_liked = []
+            new_times_liked = []
+
+            for i in range(len(liked)):
+                if liked[i] != movieId:
+                    new_liked.append(liked[i])
+                    new_times_liked.append(timestamp_liked[i])
+        
+            liked = new_liked
+            timestamp_liked = new_times_liked
 
         if len(liked) > 0:
             string_back_likes = "" + liked[0]
+            string_back_likes_times = "" + timestamp_liked[0]
         else:
             string_back_likes = ""
+            string_back_likes_times = ""
 
         for i in range(1, len(liked)):
 
             string_back_likes = string_back_likes + "," + liked[i]
+            string_back_likes_times = string_back_likes_times + "," + timestamp_liked[i]
 
     else:
         
 
         # Remove no dislike
         disliked = disliked.split(",")
+        timestamp_disliked = timestamp_disliked.split(",")
 
         if movieId in disliked:
-            disliked.remove(movieId)
+            new_disliked = []
+            new_times_disliked = []
+
+            for i in range(len(disliked)):
+                if disliked[i] != movieId:
+                    new_disliked.append(disliked[i])
+                    new_times_disliked.append(timestamp_disliked[i])
         
+            disliked = new_disliked
+            timestamp_disliked = new_times_disliked
+
         if len(disliked) > 0 :
             string_back_dislikes = "" + disliked[0]
+            string_back_dislikes_times = "" + timestamp_disliked[0]
         else:
             string_back_dislikes = ""
+            string_back_dislikes_times = ""
 
         for i in range(1, len(disliked)):
 
             string_back_dislikes = string_back_dislikes + "," + disliked[i]
+            string_back_dislikes_times = string_back_dislikes_times + "," + timestamp_disliked[i]
         
         # Remove do like
         liked = liked.split(",")
+        timestamp_liked = timestamp_liked.split(",")
 
         if movieId in liked:
-            liked.remove(movieId)
+            new_liked = []
+            new_times_liked = []
+
+            for i in range(len(liked)):
+                if liked[i] != movieId:
+                    new_liked.append(liked[i])
+                    new_times_liked.append(timestamp_liked[i])
+        
+            liked = new_liked
+            timestamp_liked = new_times_liked
 
         if len(liked) > 0:
             string_back_likes = "" + liked[0]
+            string_back_likes_times = "" + timestamp_disliked[0]
         else:
             string_back_likes = ""
+            string_back_likes_times = ""
 
         for i in range(1, len(liked)):
 
             string_back_likes = string_back_likes + "," + liked[i]
-                                                                                                                    # depara = {}
+            string_back_likes_times = string_back_likes_times + "," + timestamp_liked[i]
+
+        
+    
+    user.liked_movies = string_back_likes
+    user.disliked_movies = string_back_dislikes
+    user.timestamp_liked_movies = string_back_likes_times
+    user.timestamp_disliked_movies = string_back_dislikes_times
+
+    user.save()
+    response = { "status": "Succesful"}
+
+    return Response(data=response, status=status.HTTP_200_OK)
+
+    # depara = {}
                                                                                                                     # with open("link.csv", "r") as link:
                                                                                                                     #     reader = csv.reader(link)
                                                                                                                     #     for linha in reader:
@@ -456,14 +547,6 @@ def setscoremovie(request: Request):
                                                                                                                     # for i in range(1, len(disliked)):
 
                                                                                                                     #     string_back_dislikes = string_back_dislikes + "," + disliked[i]
-    
-    user.liked_movies = string_back_likes
-    user.disliked_movies = string_back_dislikes
-
-    user.save()
-    response = { "status": "Succesful"}
-
-    return Response(data=response, status=status.HTTP_200_OK)
     
 @api_view(http_method_names=["GET"])
 @permission_classes([IsAuthenticated])

@@ -38,6 +38,7 @@ class User(AbstractUser):
     disliked_movies = models.TextField()
     timestamp_disliked_movies = models.TextField()
     timestamp_liked_movies = models.TextField()
+    predicts = models.TextField()
 
     objects = CustomUserManager()
     USERNAME_FIELD = "email"
