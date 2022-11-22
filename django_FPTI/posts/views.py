@@ -15,6 +15,7 @@ from .serializers import PostSerializer
 from .permissions import ReadOnly, AuthorOrReadOnly
 from rest_framework.pagination import PageNumberPagination
 import json
+import csv
 
 
 class CustomPaginator(PageNumberPagination):
@@ -221,30 +222,73 @@ def recommendations(request: Request):
 
     bests.append(movie_dict)
 
-    liked_all_users = User.objects.values_list("liked_movies")
+    if "mock" in user.email and "Mock" in user.username:
+        id = user.username[5:]
+        print(id)
+        recs_movies_infos = []
+        aodenar = {}
 
-    recs = []
+        with open("all_predictions_100k.csv", 'r') as file:
+            reader = csv.reader(file)
+            for linha in reader:
+                if linha[0] == id:
+                    if "e" not in linha[3]:
+                        aodenar[linha[1]] = linha[3]
 
-    for movie_liked in liked:
-        for item in liked_all_users:
-            l_item = item[0].split(",")
+        sorted_values = sorted(aodenar.values())
+        sorted_dict = {}
 
-            if movie_liked in l_item:
-                for id_item in l_item:
-                    recs.append(id_item)
+        for i in sorted_values:
+            for k in aodenar.keys():
+                if aodenar[k] == i:
+                    sorted_dict[k] = aodenar[k]
+        saida = list(sorted_dict.keys())
+        saida = saida[len(saida)-20:]
+        saida.reverse()
+        print(saida)
+        depara = {}
+        with open("link.csv", "r") as link:
+            reader = csv.reader(link)
+            for linha in reader:
+                depara[linha[0]] = linha[1]
+                while len(depara[linha[0]])<7:
+                    depara[linha[0]] = "0" + depara[linha[0]]
+                depara[linha[0]] = "tt" + depara[linha[0]]
+        recs_tratada = []
+        for a in saida:
+            if a in depara:
+                recs_tratada.append(depara[a])
+        for movie in movies:
+            if movie["id"] in recs_tratada:
+                recs_movies_infos.append(movie);
         
-    recs_tratada = []
 
-    for movie_rec in recs:
-        if movie_rec not in recs_tratada and movie_rec not in liked:
-            recs_tratada.append(movie_rec)
 
-    
-    recs_movies_infos = []
+    else:
+        liked_all_users = User.objects.values_list("liked_movies")
 
-    for movie in movies:
-        if movie["id"] in recs_tratada:
-            recs_movies_infos.append(movie)
+        recs = []
+
+        for movie_liked in liked:
+            for item in liked_all_users:
+                l_item = item[0].split(",")
+
+                if movie_liked in l_item:
+                    for id_item in l_item:
+                        recs.append(id_item)
+            
+        recs_tratada = []
+
+        for movie_rec in recs:
+            if movie_rec not in recs_tratada and movie_rec not in liked:
+                recs_tratada.append(movie_rec)
+
+        
+        recs_movies_infos = []
+
+        for movie in movies:
+            if movie["id"] in recs_tratada:
+                recs_movies_infos.append(movie)
 
 
     movie_dict = dict()
@@ -261,7 +305,6 @@ def recommendations(request: Request):
 @api_view(http_method_names=["PUT"])
 @permission_classes([IsAuthenticated])
 def setscoremovie(request: Request):
-
 
     movieId = request.data.get("movieId")
 
@@ -374,8 +417,45 @@ def setscoremovie(request: Request):
         for i in range(1, len(liked)):
 
             string_back_likes = string_back_likes + "," + liked[i]
+                                                                                                                    # depara = {}
+                                                                                                                    # with open("link.csv", "r") as link:
+                                                                                                                    #     reader = csv.reader(link)
+                                                                                                                    #     for linha in reader:
+                                                                                                                    #         depara[linha[0]] = linha[1]
+                                                                                                                    #         while len(depara[linha[0]])<7:
+                                                                                                                    #             depara[linha[0]] = "0" + depara[linha[0]]
+                                                                                                                    #         depara[linha[0]] = "tt" + depara[linha[0]]
 
-        
+                                                                                                                    # liked = []
+                                                                                                                    # disliked = []
+
+                                                                                                                    # with open("ratings_100k.csv", "r") as file:
+                                                                                                                    #     reader = csv.reader(file)
+                                                                                                                    #     for linha in reader:
+                                                                                                                    #         if linha[0] == score:
+                                                                                                                    #             if float(linha[2]) >= 2.5:
+                                                                                                                    #                 liked.append(depara[linha[1]])
+                                                                                                                    #             else:
+                                                                                                                    #                 disliked.append(depara[linha[1]])
+
+                                                                                                                    
+                                                                                                                    # if len(liked) > 0:
+                                                                                                                    #     string_back_likes = "" + liked[0]
+                                                                                                                    # else:
+                                                                                                                    #     string_back_likes = ""
+
+                                                                                                                    # for i in range(1, len(liked)):
+
+                                                                                                                    #     string_back_likes = string_back_likes + "," + liked[i]
+
+                                                                                                                    # if len(disliked) > 0 :
+                                                                                                                    #     string_back_dislikes = "" + disliked[0]
+                                                                                                                    # else:
+                                                                                                                    #     string_back_dislikes = ""
+
+                                                                                                                    # for i in range(1, len(disliked)):
+
+                                                                                                                    #     string_back_dislikes = string_back_dislikes + "," + disliked[i]
     
     user.liked_movies = string_back_likes
     user.disliked_movies = string_back_dislikes

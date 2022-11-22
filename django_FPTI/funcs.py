@@ -32,7 +32,7 @@ import json
 # OrdenaScore("successData.json")
 # print(json.load(open('Top20Score.json')))
 def normatizar(arquivo):
-    file = open(arquivo);
+    file = open(arquivo, encoding="utf-8");
     movies = json.load(file);
     file.close
     for movie in movies:
