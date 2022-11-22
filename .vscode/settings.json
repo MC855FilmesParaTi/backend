@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/1e96b2db-740a-4212-94a6-a34e9a2c40d8/AppServices/subscriptions/1e96b2db-740a-4212-94a6-a34e9a2c40d8/resourceGroups/filmes-pra-ti-855/providers/Microsoft.Web/sites/filmes-pra-ti",
+    "appService.deploySubpath": "django_FPTI"
+}
