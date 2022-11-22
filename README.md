@@ -1,18 +1,37 @@
-# backend
+# Universidade Estadual de Campinas
+# Instituto da Computação
 
-Repositório para o setor backend do projeto Filme Para Ti
+## Disciplina: MC855-2s2022
 
-***
+#### Professor e Assistente
 
-## Responsáveis backend
+| Nome                     | Email                   |
+| ------------------------ | ------------------------|
+| Professora Juliana Borin | jufborin@unicamp.br     |
+| Assistente Paulo Kussler | paulo.kussler@gmail.com |
 
-- Heigon Alafaire Soldera Pires - RA: 217638
-- Piethro César de Andrade - RA: 223549
 
-## Outros membros do grupo
+#### Equipe
 
-- Murilo de Lima Cruz - RA: 138923
-- Marcela Medicina Ferreira - RA: 183266
-- Ian Loron de Almeida RA: 198933
-- Luana Felipe de Barros - RA: 201705
-- Lucas B.A. Farias - RA:220650
+| Nome               | RA               | Email                  | ID Git                |
+| ------------------ | ---------------- | ---------------------- |---------------------- |
+|Heigon Alafaire Soldera Pires|217638|h217638@dac.unicamp.br|heigon77|
+|Piethro César de Andrade|223549|p223549@dac.unicamp.br|PiethroCesar|
+|                    |                  |                        |                       |
+|                    |                  |                        |                       |
+
+### Descrição do projeto:
+O projeto consiste em desenvolver uma plataforma que possui o objetivo de recomendar filmes ao usuários baseado em seus gostos.  
+Esse repositório é destinado ao 
+
+#### Prints das telas com descrição das funcionalidades. 
+
+
+#### Tecnologias, ferramentas, dependências, versões. etc. 
+
+
+#### Ambientes
+
+
+#### Como colocar no ar, como testar, etc
+#### Como acessar, quem pode se cadastrar(regras de acessos), etc.
