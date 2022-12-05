@@ -381,6 +381,14 @@ Para o desenvolvimento desse projeto foi utilizado o Django 4.0.4, em especial, 
 
 Outras bibliotecas e pacotes utilizados estão descritos no [requirements.txt](https://github.com/MC855FilmesParaTi/backend/blob/main/django_FPTI/requirements.txt)
 
+#### Como executar
+
+Para rodar o projeto localmente, dentro do diretório [django_FPTI](https://github.com/MC855FilmesParaTi/backend/tree/main/django_FPTI) executar:
+
+```
+python3 manage.py runserver
+```
+
 #### Trablahos futuros
 
 Carregar os filems para o banco de dados também e desenvolver novos endpoints para novas funcionalidades.
