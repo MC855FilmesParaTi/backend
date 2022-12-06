@@ -377,7 +377,7 @@ body
 
 #### Tecnologias, ferramentas, dependências, versões. etc. 
 
-Para o desenvolvimento desse projeto foi utilizado o Django 4.0.4, em especial, o Django REST Framework 3.13.1 para implementação da API com os endpoints descritos. O deploy do back-edn foi realizado em um App Service da Azure e o banco de dados foi o Azure SQL.
+Para o desenvolvimento desse projeto foi utilizado o Django 4.0.4, em especial, o Django REST Framework 3.13.1 para implementação da API com os endpoints descritos. O deploy do back-end foi realizado em um App Service da Azure e o banco de dados foi o Azure SQL.
 
 Outras bibliotecas e pacotes utilizados estão descritos no [requirements.txt](https://github.com/MC855FilmesParaTi/backend/blob/main/django_FPTI/requirements.txt)
 
