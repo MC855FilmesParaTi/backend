@@ -17,8 +17,6 @@
 | ------------------ | ---------------- | ---------------------- |---------------------- |
 |Heigon Alafaire Soldera Pires|217638|h217638@dac.unicamp.br|heigon77|
 |Piethro César de Andrade|223549|p223549@dac.unicamp.br|PiethroCesar|
-|                    |                  |                        |                       |
-|                    |                  |                        |                       |
 
 ### Descrição do projeto:
 O projeto consiste em desenvolver uma plataforma que possui o objetivo de recomendar filmes ao usuários baseado em seus gostos.  
@@ -54,7 +52,9 @@ response
 }
 ```
 </details>
-  
+
+As informações de senha armazenadas no banco são imediatamente encriptadas utilizando SHA256.
+
 #### Login:  
 
 Logar com o usuário criado e receber o token de autenticação.
@@ -82,6 +82,9 @@ response
 ```
 </details>
 
+Essa parte do Backend foi criada usando um modelo de JWT (JSON Web Token) do Framework rest do Django.
+A duração desse Token de autenticação pode ser configurada de acordo a atender as necessidades de segurança da plataforma.
+
 #### Avaliar filme:  
 
 Registra a avaliação de um filme.
@@ -106,6 +109,9 @@ response
 }
 ```
 </details>
+
+Nesse endpoint, não é necessário informar no corpo da requisição o usuário, pois o prório token é utilizado para gerir as informações de usuário.
+Tal funcionalidade facilita a implementação de endpoints personalizados, uma vez que as informações sobre o usuário não precisam ser passadas, apenas o Token.
 
 #### Recomendações:  
 
@@ -389,7 +395,12 @@ Para rodar o projeto localmente, dentro do diretório [django_FPTI](https://gith
 python3 manage.py runserver
 ```
 
-#### Trablahos futuros
+#### Trabalhos futuros
 
-Carregar os filems para o banco de dados também e desenvolver novos endpoints para novas funcionalidades.
+Carregar os filmes para o banco de dados também e desenvolver novos endpoints para novas funcionalidades.
+Implementar amizades para recomendações a grupos de usuários, semelhante ao match do spotfy.
+Sugestões de plataformas de streaming para assistir os conteúdos recomendados.
+Integração com Machine Learning para garantir re-treinos dos sistemas de recomendação
+Webscrapping sendo Atualizado automáticamente
+
 
